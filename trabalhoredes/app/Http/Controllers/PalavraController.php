@@ -34,12 +34,16 @@ class PalavraController extends Controller
     {
         // Pega a palavra
         $palavra = $request->input('palavra');
+        //dd($palavra);
         // Abre o arquivo badwords.txt, que esta um nivel acima da raiz
         $arquivo = fopen('./../../badwords.txt', 'a');
         // Escreve a palavra no arquivo
-        fwrite($arquivo, $palavra . "\n");
+        fwrite($arquivo, "\n" . $palavra);
         // Fecha o arquivo
         fclose($arquivo);
+
+        // Retorna um json vazio
+        return response()->json([]);
     }
 
     /**
@@ -65,5 +69,8 @@ class PalavraController extends Controller
 
         // Salva o array no arquivo
         file_put_contents('./../../badwords.txt', implode("\n", $lista));
+
+        // Retorna um json vazio
+        return response()->json([]);
     }
 }
