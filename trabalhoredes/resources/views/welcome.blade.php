@@ -23,40 +23,78 @@
 
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">Badwords</h5>
-                <a href="#" class="btn btn-primary">Button</a>
+                <div class="card-title row">
+                    <h5 class="col-5">Badwords</h5>
+                    <div class="col-5">
+                        <input type="text" class="form-control" v-model="palavra" placeholder="Digite a palavra">
+                    </div>
+                    <div class="col-2">
+                        <a @click="addPalavra()" class="btn btn-primary float-end">Adicionar Palavra</a>
+                    </div>
 
-                <table class="table table-sm">
-                    <caption>Lista de palavras</caption>
-                    <thead>
-                        <th scope="col">#</th>
-                        <th scope="col">Palavra</th>
-                    </thead>
-                    <tbody>
-                        ...
-                    </tbody>
-                </table>
+                    <div class="p-3">
+                        <table class=" table table-sm">
+                            <caption>Lista de palavras</caption>
+                            <thead>
+                                <th scope="col">#</th>
+                                <th scope="col">Palavra</th>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(index, palavra) in palavras" :key="index">
+                                    <th scope="row">@{{ index }}</th>
+                                    <td>@{{ palavra }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+            <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-    <script>
-        const {
-            createApp,
-            ref
-        } = Vue
+            <script>
+                const {
+                    createApp,
+                    ref
+                } = Vue
 
-        createApp({
-            setup() {
-                const message = ref('Hello vue!')
-                return {
-                    message
-                }
-            }
-        }).mount('#app')
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+                createApp({
+                    setup() {
+                        let palavras = ref([])
+                        let palavra = ref('')
+
+                        function getPalavras() {
+                            fetch('/api/palavras')
+                                .then(response => response.json())
+                                .then(data => palavras.value = data)
+                        }
+
+                        function addPalavra() {
+                            fetch('/api/palavras', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        palavra: palavra.value
+                                    })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    getPalavras()
+                                    palavra.value = ''
+                                })
+                        }
+
+                        getPalavras()
+
+                        return {
+                            palavras,
+                            palavra
+                        }
+                    }
+                }).mount('#app')
+            </script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 </body>
 
 </html>
