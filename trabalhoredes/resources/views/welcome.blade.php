@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Trabalho de Redes 3-4</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css" integrity="sha384-b6lVK+yci+bfDmaY1u0zE8YYJt0TZxLEAFyYSLHId4xoVvsrQu3INevFKo+Xir8e" crossorigin="anonymous">
 </head>
 
 <body>
@@ -38,11 +39,15 @@
                             <thead>
                                 <th scope="col">#</th>
                                 <th scope="col">Palavra</th>
+                                <th scope="col">Ações</th>
                             </thead>
                             <tbody>
-                                <tr v-for="(index, palavra) in palavras" :key="index">
+                                <tr v-for="(palavra, index) in palavras" :key="index">
                                     <th scope="row">@{{ index }}</th>
-                                    <td>@{{ palavra }}</td>
+                                    <td style="width: 80%">@{{ palavra }}</td>
+                                    <td>
+                                        <i @click="deletePalavra(palavra)" class="bi bi-trash3-fill" style="color: red"></i>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -82,6 +87,16 @@
                                 .then(data => {
                                     getPalavras()
                                     palavra.value = ''
+                                })
+                        }
+
+                        function deletePalavra(palavra) {
+                            fetch('/api/palavras/' + palavra, {
+                                    method: 'DELETE'
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    getPalavras()
                                 })
                         }
 
