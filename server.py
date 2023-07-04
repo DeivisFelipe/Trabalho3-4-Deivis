@@ -26,8 +26,8 @@ try:
             receivedData = newSocket.recv(2000)
             if not receivedData: break
             # Print the data to the file
-            print(receivedData)
-            #file.write(receivedData)
+            # print(receivedData)
+            file.write(receivedData)
         newSocket.close()
         print("Disconnected from", address)
 finally:

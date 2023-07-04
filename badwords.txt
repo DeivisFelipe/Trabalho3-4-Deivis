@@ -1,5 +1,3 @@
 Bilbo
 it
 Gandalf
-another
-without
