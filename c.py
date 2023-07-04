@@ -10,7 +10,7 @@ def main():
         s.connect(('8.8.8.8', 8881))
         with open("lotr.txt", "rb") as file:
             data = file.read(1000)
-            s.sendall(data)
+            s.send(data)
 
 if __name__ == '__main__':
     main()

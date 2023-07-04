@@ -4,10 +4,16 @@ from scapy.all import *
 from scapy.layers.inet import IP, TCP, UDP, ICMP
 from scapy.layers.l2 import Ether
 
+import re
+
 def substitute_badwords(pkt):
-    with open("badwords.txt", "rb") as file:
+    with open("badwords.txt", "r") as file:
+        new_payload = str(pkt[TCP].payload)
         for word in file.readlines():
-            pass
+            new_payload = new_payload.replace(" " + word.replace('\n', '') + " ", " Carlos Raniery de Paula dos Santos ")
+    print(new_payload)
+    return new_payload
+
 
 def main():
     public_interface = 'r-eth1'
@@ -93,7 +99,8 @@ def main():
             iface = output_interface[pkt.sniffed_on]
 
             if new_pkt:
-                print(new_pkt[TCP].payload)
+                new_pkt[TCP].payload = Raw(substitute_badwords(new_pkt))
+                new_pkt = recalc_check_sum(new_pkt)
                 sendp(new_pkt, iface=iface, verbose=False)
 
         def handle(self, pkt: Packet):
