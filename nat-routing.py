@@ -4,15 +4,20 @@ from scapy.all import *
 from scapy.layers.inet import IP, TCP, UDP, ICMP
 from scapy.layers.l2 import Ether
 
-import re
+nosso_deus_raniery = "Raniery"
 
-def substitute_badwords(pkt):
+def substitute_badwords(payload: str):
+    safe_payload = payload
     with open("badwords.txt", "r") as file:
-        new_payload = str(pkt[TCP].payload)
         for word in file.readlines():
-            new_payload = new_payload.replace(" " + word.replace('\n', '') + " ", " Carlos Raniery de Paula dos Santos ")
-    print(new_payload)
-    return new_payload
+            # pass
+            wordSemBarraN = word.replace('\n', '')
+            substitute_word = "*" * len(wordSemBarraN)
+            if len(wordSemBarraN) == len(nosso_deus_raniery):
+                substitute_word = nosso_deus_raniery
+            safe_payload = safe_payload.replace(" " + wordSemBarraN + " ", " " + substitute_word + " ")
+    # print(safe_payload)
+    return safe_payload
 
 
 def main():
@@ -27,6 +32,16 @@ def main():
         ICMP: {"destination_port": "id", "source_port": "id"},
         TCP: {"destination_port": "dport", "source_port": "sport"}
     }
+
+    def substitute_badwords_in_pkt(pkt):
+        if TCP in pkt and pkt[TCP].payload:
+            payload = pkt[TCP].payload.load.decode('utf-8')
+            safe_payload = bytes(substitute_badwords(payload), 'utf-8')
+
+            safe_packet = pkt.copy()
+            safe_packet[TCP].payload = Raw(safe_payload)
+            return recalc_check_sum(safe_packet)
+        return pkt
 
     def recalc_check_sum(pkt: Packet):
         del pkt[IP].chksum
@@ -99,9 +114,9 @@ def main():
             iface = output_interface[pkt.sniffed_on]
 
             if new_pkt:
-                new_pkt[TCP].payload = Raw(substitute_badwords(new_pkt))
-                new_pkt = recalc_check_sum(new_pkt)
-                sendp(new_pkt, iface=iface, verbose=False)
+                safe_packet = substitute_badwords_in_pkt(new_pkt)
+                # safe_packet.show()
+                sendp(safe_packet, iface=iface, verbose=False)
 
         def handle(self, pkt: Packet):
             if pkt.sniffed_on == public_interface:
